@@ -1,8 +1,8 @@
 http     = require 'http'
 path     = require 'path'
-env      = require '../lib/env'
-mm       = require('../lib/mod').mgr
-log      = require '../lib/log'
+env      = require './env'
+mm       = require('./mod').mgr
+log      = require './log'
 
 # Express middleware
 express        = require 'express'
@@ -50,9 +50,11 @@ class App
   #-----------------------------------------
   
   make_routes : () ->
-    files = [ 'msg' ]
+    top = env.get().get_top_dir()
+    dir = mm.config.service.dir
+    files = mm.config.service.names
     for f in files
-      require("../http/#{f}").bind_to_app @app
+      require(path.join(top,dir,files)).bind_to_app @app
 
   #-----------------------------------------
 
@@ -76,4 +78,5 @@ class App
 
 ##-----------------------------------------------------------------------
 
-(new App).run()
+exports.main = () ->
+  (new App).run()

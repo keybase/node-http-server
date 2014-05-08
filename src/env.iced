@@ -43,6 +43,12 @@ class Env
     r = dflt()     if not r? and dflt?
     return r
 
+  get_top_dir : () ->
+    @get_opt
+      env : (e) -> e.TOP_DIR
+      arg : (a) -> a.p
+      dflt : process.cwd
+
   get_port : ({dflt, config}) ->
     @get_opt
       env : (e) -> e.PORT

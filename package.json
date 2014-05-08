@@ -6,9 +6,9 @@
   "scripts": {
     "test": "make test"
   },
-  "bin" : {
-    "app" : "./bin/app.js",
-    "cfg" : "./bin/cfg.js"
+  "bin": {
+    "app": "./bin/app.js",
+    "cfg": "./bin/cfg.js"
   },
   "repository": {
     "type": "git",
@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/keybase/base-http-server/issues"
   },
-  "homepage": "https://github.com/keybase/base-http-server"
+  "homepage": "https://github.com/keybase/base-http-server",
+  "dependencies": {
+    "iced-coffee-script": "^1.7.1-b"
+  }
 }
