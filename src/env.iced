@@ -121,6 +121,12 @@ class Env
       r.push p
     else r = null
     return r
+
+  get_root_db_pw : () ->
+    @get_opt
+      env : (e) -> e.MYSQL_ROOT_PW
+      arg : (a) -> a.p
+      dflt : -> null
  
   get_args : () -> @argv._
   get_argv : () -> @argv
