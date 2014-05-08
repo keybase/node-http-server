@@ -45,10 +45,10 @@ exports.App = class App
   
   make_routes : () ->
     top = env.get().get_top_dir()
-    dir = mm.config.service.dir
-    files = mm.config.service.names
-    for f in files
-      require(path.join(top,dir,files)).bind_to_app @app
+    cfg = mm.config.handlers
+    dir = cfg.dir
+    for f in cfg.files
+      require(path.join(top,dir,f)).bind_to_app @app
 
   #-----------------------------------------
 

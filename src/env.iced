@@ -49,7 +49,7 @@ class Env
     @get_opt
       env : (e) -> e.TOP_DIR
       arg : (a) -> a.p
-      dflt : -> process.cwd
+      dflt : -> process.cwd()
 
   get_config_dir : () ->
     @get_opt

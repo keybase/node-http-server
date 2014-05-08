@@ -1,7 +1,7 @@
 mysql = require 'mysql'
 mm    = require('../mod').mgr
 log   = require '../log'
-sc    = require('../constants').status.codes
+sc    = require('../status').codes
 
 ##=======================================================================
 
@@ -15,13 +15,11 @@ exports.Tx = class Tx
 
 ##=======================================================================
 
-class Database
-
-  constructor : (@cfg) ->
+class Module
 
   init : (cb) ->
-    n = @cfg.n_threads
-    cfg = @cfg.db
+    cfg = mm.config.db
+    n = cfg.n_threads
     @_waiters = []
     @_clients = (mysql.createConnection cfg for i in [0...n])
     cb true
@@ -143,23 +141,6 @@ class Database
     cb err, elist, edict
     @_putback cli
     
-##=======================================================================
-
-class Module
-
-  constructor : () ->
-    for name, cfg of mm.config.dbs
-      @_dbs[name] = new Database cfg
-
-  init : (cb) ->
-    ok = true
-    for db in @_dbs
-      await db.init defer tmp
-      ok = false unless tmp
-    cb ok
-
-  get : (n) -> @_dbs[n]
-
 ##=======================================================================
 
 exports.Module = Module
