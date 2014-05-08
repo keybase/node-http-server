@@ -1,8 +1,8 @@
 http     = require 'http'
 path     = require 'path'
-env      = require '../env'
-mm       = require('../mod').mgr
-log      = require '../log'
+env      = require './env'
+mm       = require('./mod').mgr
+log      = require './log'
 
 # Express middleware
 express        = require 'express'

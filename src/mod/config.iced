@@ -1,6 +1,5 @@
 
-config_dir = "../../config"
-env = require "../../lib/env"
+env = require "../env"
 path = require 'path'
 
 #=======================================================================

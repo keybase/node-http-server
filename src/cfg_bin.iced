@@ -1,6 +1,6 @@
 
-mm = require('../mod').mgr
-env = require '../env'
+mm = require('./mod').mgr
+env = require './env'
 
 ##-----------------------------------------------------------------------
 

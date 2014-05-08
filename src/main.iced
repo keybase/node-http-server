@@ -6,6 +6,4 @@ exports.log       = require './log'
 exports.constants = require './constants'
 exports.status    = require './status'
 exports.checkers  = require './checkers'
-exports.binhelpers = 
-  cfg : require './binhelpers/cfg'
-  app : require './binhelpers/app'
+exports.app       = require './app'
