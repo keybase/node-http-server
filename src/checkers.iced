@@ -1,33 +1,32 @@
-mm                = require('../lib/mod').mgr
-{constants}       = require '../lib/constants'
+mm                = require('./mod').mgr
 kbpgp             = require('kbpgp')
 MT                = kbpgp.const.openpgp.message_types
 
 ##-----------------------------------------------------------------------
 
-strip = (input) -> 
+exports.strip = strip = (input) -> 
   if not input? then null
   else if (m = input.match /^\S*(.*?)\S*$/)? then m[1]
   else ''
       
 ##-----------------------------------------------------------------------
 
-in_range = (x, config) -> (x >= config.min) and (x <= config.max)
+exports.in_range = in_range = (x, config) -> (x >= config.min) and (x <= config.max)
 
 ##-----------------------------------------------------------------------
 
-check_bool = (b) ->
+exports.check_bool = check_bool = (b) ->
   if b      in [0,"0","false",false] then return [false, null]
   else if b in [1,"1","true", true]  then return [true, null]
   else return [null, 'bad boolean value']
 
 ##-----------------------------------------------------------------------
 
-is_empty = (m) -> not(m?) or not(m.length) or m.match(/^\s+$/)
+exports.is_empty = is_empty = (m) -> not(m?) or not(m.length) or m.match(/^\s+$/)
 
 ##-----------------------------------------------------------------------
 
-check_pgp_message = (text, type) ->
+exports.check_pgp_message = check_pgp_message = (text, type) ->
   [err, msg] = kbpgp.armor.decode text
   if err? then [ null, "Error parsing PGP data: #{err.message}" ]
   else if not is_empty(msg.post) then [ null, "found bogus trailing data" ]
@@ -37,7 +36,7 @@ check_pgp_message = (text, type) ->
 
 ##-----------------------------------------------------------------------
 
-check_base64u = (s) ->
+exports.check_base64u = check_base64u = (s) ->
   x = /^[0-9a-z-_]+$/i 
   if not s? then [ null, "unspecified" ]
   else if s.match x then [s, null ]
@@ -45,7 +44,7 @@ check_base64u = (s) ->
 
 ##-----------------------------------------------------------------------
 
-check_hex = (s, len) ->
+exports.check_hex = check_hex = (s, len) ->
   x = /^[0-9a-f]+$/i
   if not (s = strip s)? then [ null, 'unspecified' ]
   else if not s.match x then [ null, 'need an id']
@@ -54,7 +53,7 @@ check_hex = (s, len) ->
 
 ##-----------------------------------------------------------------------
 
-check_base64 = (s) ->
+exports.check_base64 = check_base64 = (s) ->
   if not s?
     return [null, 'unspecified']
   else
@@ -67,7 +66,7 @@ check_base64 = (s) ->
 
 ##-----------------------------------------------------------------------
 
-check_string = (s, min, max) ->
+exports.check_string = check_string = (s, min, max) ->
   if not (s = strip s)? then [ null, "unspecified" ]
   else if (min? and s.length < min) then [ null, "Must be at least #{min} long"]
   else if (max? and s.length > max) then [ null, "Must be at least #{max} long"]
@@ -75,7 +74,7 @@ check_string = (s, min, max) ->
 
 ##-----------------------------------------------------------------------
 
-check_int = (s, min, max) ->
+exports.check_int = check_int = (s, min, max) ->
   x = /^-?[0-9]+$/
   if not (s = strip s)? then [ null, "Unspecified" ]
   else if not s.match x then [ null, "need an integer" ]
@@ -85,7 +84,7 @@ check_int = (s, min, max) ->
 
 ##-----------------------------------------------------------------------
 
-check_id = (x, config, required = true) ->
+exports.check_id = check_id = (x, config, required = true) ->
   empty = not x? or x.length is 0
   if empty and required then [ null, "no ID specified" ]
   else if empty and not required then [ null, null ]
@@ -94,7 +93,7 @@ check_id = (x, config, required = true) ->
 
 ##-----------------------------------------------------------------------
 
-check_multi = (x,fn) ->
+exports.check_multi = check_multi = (x,fn) ->
   if not x? or x.length is 0 then [out,err] = [ null, "no keys given" ]
   else
     v = x.split /,/
@@ -105,10 +104,6 @@ check_multi = (x,fn) ->
       out.push val
     out = null if err?
   return [ out, err ] 
-
-##-----------------------------------------------------------------------
-
-exports.checkers = checkers =  {}
 
 ##-----------------------------------------------------------------------
 

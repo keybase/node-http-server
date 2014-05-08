@@ -1,7 +1,7 @@
 {checkers}            = require './checkers'
-constants             = require './constants'
-sc                    = constants.status.codes
-sc_lookup             = constants.status.lookup
+status_enum           = require './status'
+sc                    = status_enum.codes
+sc_lookup             = status_enum.lookup
 log                   = require './log'
 mm                    = require('./mod').mgr
 url                   = require 'url'
@@ -59,11 +59,17 @@ exports.Handler = class Handler
 
   #-----------------------------------------
 
+  # Can override this as needs be, especially if you want to add new checkers
+  # For now, everything is good, and return the original value is given.
+  check_field : (f, v) -> [ null, v ]
+
+  #-----------------------------------------
+
   get_input_field : (f, is_optional) ->
     v = @get_unchecked_input_field f
     if (not v?) and is_optional
       return true
-    [v,e] = checkers[f] v
+    [e,v] = @check_field f, v
     ret = true
     if e
       @_error_in_field[f] = e
