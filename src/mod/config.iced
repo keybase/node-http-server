@@ -13,7 +13,8 @@ class Module
   # creation scheme.
   constructor: () ->
     @_mode = env.get().get_run_mode()
-    @_files = require("#{config_dir}/top").configs
+    @_config_dir = env.get().get_config_dir()
+    @_files = require(path.join(@_config_dir, "top")).configs
     @_obj = {}
     @_paths = {}
     @source_modules()
@@ -21,8 +22,8 @@ class Module
   #-----------------------------------------
 
   find_path : (m) ->
-    paths = [ (path.join config_dir, @_mode.config_dir(), m),
-              (path.join config_dir, m) ]
+    paths = [ (path.join @_config_dir, @_mode.config_dir(), m),
+              (path.join @_config_dir, m) ]
     for p in paths
       try
         require.resolve p

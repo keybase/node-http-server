@@ -5,7 +5,7 @@ sc_lookup             = constants.status.lookup
 log                   = require './log'
 mm                    = require('./mod').mgr
 url                   = require 'url'
-env                   = require '../lib/env'
+env                   = require './env'
 
 util = require 'util'
 

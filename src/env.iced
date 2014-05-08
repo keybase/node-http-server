@@ -1,4 +1,6 @@
 
+path = require 'path'
+
 ##=======================================================================
 
 class RunMode
@@ -47,7 +49,13 @@ class Env
     @get_opt
       env : (e) -> e.TOP_DIR
       arg : (a) -> a.p
-      dflt : process.cwd
+      dflt : -> process.cwd
+
+  get_config_dir : () ->
+    @get_opt
+      env : (e) -> e.CONFIG_DIR
+      arg : (a) -> a.c
+      dflt : => path.join(@get_top_dir(), "config")
 
   get_port : ({dflt, config}) ->
     @get_opt
