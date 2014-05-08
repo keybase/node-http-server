@@ -1,8 +1,8 @@
 http     = require 'http'
 path     = require 'path'
-env      = require './env'
-mm       = require('./mod').mgr
-log      = require './log'
+env      = require '../env'
+mm       = require('../mod').mgr
+log      = require '../log'
 
 # Express middleware
 express        = require 'express'
@@ -11,15 +11,9 @@ methodOverride = require 'method-override'
 morgan         = require 'morgan'
 errorHandler   = require 'errorhandler'
 
-iced.catchExceptions()
-
 ##-----------------------------------------------------------------------
 
-env.make (m) -> m.usage 'Usage: $0 [-ld] [-m <devel|prod>] [-p <port>]'
-
-##-----------------------------------------------------------------------
-
-class App
+exports.App = class App
 
   #-----------------------------------------
 
@@ -79,4 +73,9 @@ class App
 ##-----------------------------------------------------------------------
 
 exports.main = () ->
+  iced.catchExceptions()
+  env.make (m) -> m.usage 'Usage: $0 [-ld] [-m <devel|prod>] [-p <port>]'
   (new App).run()
+
+##-----------------------------------------------------------------------
+

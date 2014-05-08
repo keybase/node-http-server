@@ -1,15 +1,12 @@
 
-mm = require('./mod').mgr
-env = require './env'
-
-##-----------------------------------------------------------------------
-
-env.make (m) -> m.usage "Usage: $0 [-m <runmode>]"
+mm = require('../mod').mgr
+env = require '../env'
 
 ##-----------------------------------------------------------------------
 
 exports.main = () ->
 
+  env.make (m) -> m.usage "Usage: $0 [-m <runmode>]"
   await mm.start [ 'config' ], defer ok
 
   if not ok

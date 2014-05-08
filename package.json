@@ -30,6 +30,11 @@
     "iced-error": "0.0.8",
     "pgp-utils": "0.0.20",
     "iced-utils": "^0.1.12",
-    "kbpgp": "^0.1.14"
+    "kbpgp": "^0.1.14",
+    "express": "^4.1.1",
+    "errorhandler": "^1.0.1",
+    "method-override": "^1.0.0",
+    "morgan": "^1.0.1",
+    "body-parser": "^1.0.2"
   }
 }
