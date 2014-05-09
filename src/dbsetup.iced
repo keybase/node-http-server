@@ -57,7 +57,7 @@ class InitDB
       if root
         await @get_root_pw esc defer pw
       else
-        pw = @password or mm.config.dbpw?.password
+        pw = @password or mm.config.secrets?.dbpw
         params.database = @cfg.database
       params.password = pw
       conn = mysql.createConnection params
@@ -107,11 +107,13 @@ class InitDB
 
   #---------
 
-  write_password : (cb) ->
-    fn = path.join env.get().get_config_dir(), 'dbpw.json'
+  write_secrets : (cb) ->
+    fn = path.join env.get().get_config_dir(), 'secrets.json'
     log.info "| writing password out to #{fn}"
-    js = JSON.stringify { @password }
-    await fs.writeFile fn, js, {mode : 0o640 }, defer err
+    obj = mm.config.secrets or {}
+    obj.dbpw = @password
+    json = JSON.stringify obj, null, "    "
+    await fs.writeFile fn, json, {mode : 0o640 }, defer err
     cb err
  
   #---------
@@ -137,7 +139,7 @@ class InitDB
       await c.query q, esc defer()
     await @get_conn { root : false }, esc defer c2
     await c2.query @_create_tables, esc defer()
-    await @write_password esc defer()
+    await @write_secrets esc defer()
     log.info "- created database"
     cb null
     
