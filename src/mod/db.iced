@@ -19,7 +19,7 @@ class Module
 
   init : (cb) ->
     cfg = mm.config.db
-    cfg.password or= mm.config.dbpw.password
+    cfg.password or= mm.config.secrets.dbpw
     n = cfg.n_threads
     @_waiters = []
     @_clients = (mysql.createConnection cfg for i in [0...n])
