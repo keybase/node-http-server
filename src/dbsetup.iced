@@ -143,8 +143,17 @@ class InitDB
     
   #---------
 
+  confirm_please : (msg, cb) ->
+    await read { prompt : msg }, defer err, val
+    if not err? and not (val in ['y', 'Y', 'yes', 'YES' ])
+      err = new Error "canceled"
+    cb err
+
+  #---------
+
   cmd_delete : (cb) ->
     esc = make_esc cb, "do_create"
+    await @confirm_please "Really nuke your database? [y/N]", esc defer()
     log.info "+ Nuking database #{@cfg.database}"
     await @get_conn { root : true }, esc defer c
     queries = [
