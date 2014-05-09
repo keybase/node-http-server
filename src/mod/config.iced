@@ -13,10 +13,13 @@ class Module
   constructor: () ->
     @_mode = env.get().get_run_mode()
     @_config_dir = env.get().get_config_dir()
-    @_files = require(path.join(@_config_dir, "top")).configs
+    top = require(path.join(@_config_dir, "top"))
+    @_rfiles = top.required
+    @_ofiles = top.optional
     @_obj = {}
     @_paths = {}
-    @source_modules()
+    @source_modules @_rfiles, true
+    @source_modules @_ofiles, false
 
   #-----------------------------------------
 
@@ -42,16 +45,16 @@ class Module
 
   #-----------------------------------------
 
-  source_modules : () ->
+  source_modules : (list, required) ->
     @_loaded = true
-    for f in @_files
+    for f in list
       p = @find_path f
       if p
         c = @source_module p
         @_paths[f] = p
         @_obj[f] = c
         @[f] = c
-      else
+      else if required
         @_loaded = false
         console.log "Cannot find config file '#{f}'"
 

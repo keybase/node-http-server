@@ -57,7 +57,7 @@ class InitDB
       if root
         await @get_root_pw esc defer pw
       else
-        pw = @password or mm.config.dbpw.password
+        pw = @password or mm.config.dbpw?.password
         params.database = @cfg.database
       params.password = pw
       conn = mysql.createConnection params
