@@ -141,9 +141,8 @@ exports.Handler = class Handler
     await @__handle_universal_headers defer()
     await @__set_cross_site_get_headers defer()
     await @__handle_checks defer()
-    unless did_reply
-      await @__handle_custom defer()
-      await @__handle_output defer()
+    await @__handle_custom defer()
+    await @__handle_output defer()
     cb()
 
   #------
@@ -171,6 +170,10 @@ exports.Handler = class Handler
       @set_ok()
     cb()
 
+  #------
+
+  _handle_err : (cb) -> cb()
+  
   #------
   
   __handle_custom : (cb) ->
