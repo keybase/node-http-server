@@ -7,6 +7,7 @@ read = require 'read'
 {base64u} = require('pgp-utils').util
 {prng} = require 'crypto'
 path = require 'path'
+log = require 'iced-logger'
 
 ##-----------------------------------------------------------------------
 
@@ -88,9 +89,11 @@ class InitDB
   #---------
 
   test_connect : (cb) ->
+    log.info "+ Testing connection to database #{@cfg.database}"
     esc = make_esc cb, "test_conenct"
     await @get_conn { root : false }, esc defer conn
     await conn.query "SELECT 1", esc defer dummy
+    log.info "- DB connection succeeded"
     cb null
 
   #---------
@@ -98,7 +101,7 @@ class InitDB
   cmd_init : (cb) ->
     await @test_connect defer err
     if err?
-      console.log "Failed to connect to DB; will try to create a new one"
+      log.warn "Failed to connect to DB; will try to create a new one"
       await @do_create defer err
     cb err
 
@@ -106,6 +109,7 @@ class InitDB
 
   write_password : (cb) ->
     fn = path.join env.get().get_config_dir(), 'dbpw.json'
+    log.info "| writing password out to #{fn}"
     js = JSON.stringify { @password }
     await fs.writeFile fn, js, {mode : 0o640 }, defer err
     cb err
@@ -118,6 +122,7 @@ class InitDB
 
   do_create : (cb) ->
     esc = make_esc cb, "do_create"
+    log.info "+ creating database: #{@cfg.database}"
     await @open_file esc defer()
     await @get_conn { root : true }, esc defer c
     @password = base64u.encode prng 15
@@ -133,12 +138,14 @@ class InitDB
     await @get_conn { root : false }, esc defer c2
     await c2.query @_create_tables, esc defer()
     await @write_password esc defer()
+    log.info "- created database"
     cb null
     
   #---------
 
   cmd_delete : (cb) ->
     esc = make_esc cb, "do_create"
+    log.info "+ Nuking database #{@cfg.database}"
     await @get_conn { root : true }, esc defer c
     queries = [
       "DROP USER #{@fq_user()}"
@@ -147,6 +154,7 @@ class InitDB
     ]
     for q in queries
       await c.query q, esc defer()
+    log.info "- Nuked!"
     cb null
 
   #---------
