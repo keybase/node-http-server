@@ -21,15 +21,16 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
   #-----------------------------------------
 
   @check_from_client : (s, cfg, cb) ->
-    [e,o] = SelfCertifiedToken.from_client s, cfg
-    await o.check defer e, ok unless e?
-    cb e,ok,o
+    [err,obj] = SelfCertifiedToken.from_client s, cfg
+    await obj.check defer err unless err?
+    cb err, obj
  
   #-----------------------------------------
 
   @from_client : (s, cfg) ->
     err = null
     ret = null
+    klass = cfg.klass or SelfCertifiedToken
     if not (b = utils.base64u.decode(s))? or b.length is 0
       err = "Failed to base64-decode"
     else if not ([e,x] = (utils.katch () -> unpack b))? or e?
@@ -39,7 +40,7 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
     else if (x.length isnt 5) or (x[0] isnt @VERSION)
       err = "Only understand version #{@VERSION}; got something else: #{JSON.stringify x}"
     else
-      ret = new Session
+      ret = new klass
         version : x[0]
         id : x[1]
         generated : x[2]
@@ -109,14 +110,16 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
     @liftetime = mm.config.security.sct.lifetime unless @lifetime?
     @mac = @_make_mac()
     ret = @_pack false
-    cb ret
+    err = null
+    cb err, ret
 
   #-----------------------------------------
 
   generate_to_client : (cb) ->
-    await @generate defer ret
-    ret = ret.toString @ENCODING if ret
-    cb ret
+    await @generate defer err, ret
+    if not err? and ret?
+      ret = utils.base64u.encode ret
+    cb err, ret
   
   #-----------------------------------------
 

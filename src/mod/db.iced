@@ -89,14 +89,13 @@ class Module
 
   update1 : (q, args, cb, insert_or_update = false) ->
     await @query q, args, defer err, info
-    ret = false
     if err?
       log.error "In #{q} w/ #{JSON.stringify args}: #{err}"
     else if (((ar = info.affectedRows) isnt 1) and
              (not insert_or_update or (ar isnt 2)))
       log.warn "In #{q} w/ #{JSON.stringify args}; wrong number of rows: #{ar}"
-    else ret = true
-    cb ret
+      err = new Error "wrong number of rows"
+    cb err
 
   ##-----------------------------------------
   

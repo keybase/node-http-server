@@ -28,6 +28,7 @@ exports.Handler = class Handler
     @oo                 = {}
     @user               = null
     @response_sent_yet  = false
+    @http_out_code      = 200
    
   #-----------------------------------------
 
@@ -40,7 +41,7 @@ exports.Handler = class Handler
    
   #-----------------------------------------
 
-  pub: (dict) -> @oo[k] = v for k,v of dict
+  pub : (dict) -> @oo[k] = v for k,v of dict
   clear_pub : () -> @oo = {}
 
   #-----------------------------------------
@@ -121,7 +122,7 @@ exports.Handler = class Handler
   
   send_res_json : (cb) ->
     @format_res()
-    @res.send @oo
+    @res.send @http_out_code, @oo
     @response_sent_yet = true
     cb()
 
@@ -173,12 +174,15 @@ exports.Handler = class Handler
   #------
 
   _handle_err : (cb) -> cb()
-  
+
   #------
   
   __handle_custom : (cb) ->
     if @is_ok()
-      await @_handle defer()
+      await @_handle defer err
+      if err?
+        @set_error err.code, err.message 
+        @http_out_code = c if (c = err.http_code)?
     else
       await @_handle_err defer()
     cb()
