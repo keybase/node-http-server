@@ -37,6 +37,7 @@ class Module
     m = require p
     if m.config?         then m.config
     else if m.generator? then m.generator @
+    else if m?           then m
     else null
 
   #-----------------------------------------
