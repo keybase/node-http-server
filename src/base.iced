@@ -41,6 +41,10 @@ exports.Handler = class Handler
    
   #-----------------------------------------
 
+  allow_cross_site_get_requests : () -> false
+
+  #-----------------------------------------
+
   pub : (dict) -> @oo[k] = v for k,v of dict
   clear_pub : () -> @oo = {}
 
@@ -190,7 +194,7 @@ exports.Handler = class Handler
   #------
   
   __handle_output : (cb) ->
-    if @response_sent_yet
+    unless @response_sent_yet
       await @send_res_json defer()
     cb()
    

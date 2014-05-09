@@ -3,6 +3,7 @@ utils          = require('iced-utils').util
 crypto         = require 'crypto'
 constants      = require './constants'
 sc             = require('./status').codes
+mm             = require('./mod').mgr
 
 ##=======================================================================
 
@@ -90,7 +91,8 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
 
   _make_mac : (enc = null) ->
     msg = @_pack true
-    hm = crypto.createHmac 'sha512', @key
+    key = utils.base64u.decode @key
+    hm = crypto.createHmac 'sha512', key
     hm.update msg
     hm.digest()
 
@@ -107,7 +109,7 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
   generate : (cb) ->
     @version = @VERSION
     @generated = utils.unix_time()
-    @liftetime = mm.config.security.sct.lifetime unless @lifetime?
+    @lifetime = mm.config.security.sct.lifetime unless @lifetime?
     @mac = @_make_mac()
     ret = @_pack false
     err = null
