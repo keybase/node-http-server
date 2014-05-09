@@ -7,6 +7,11 @@ mm             = require('./mod').mgr
 
 ##=======================================================================
 
+encode = (s) -> s.toString 'base64'
+decode = (b) -> new Buffer b, 'base64'
+
+##=======================================================================
+
 exports.SelfCertifiedToken = class SelfCertifiedToken
 
   @VERSION : 1
@@ -32,7 +37,7 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
     err = null
     ret = null
     klass = cfg.klass or SelfCertifiedToken
-    if not (b = utils.base64u.decode(s))? or b.length is 0
+    if not (b = decode(s))? or b.length is 0
       err = "Failed to base64-decode"
     else if not ([e,x] = (utils.katch () -> unpack b))? or e?
       err = "Failed to purepack.unpack"
@@ -91,7 +96,7 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
 
   _make_mac : (enc = null) ->
     msg = @_pack true
-    key = utils.base64u.decode @key
+    key = decode @key
     hm = crypto.createHmac 'sha512', key
     hm.update msg
     hm.digest()
@@ -120,12 +125,12 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
   generate_to_client : (cb) ->
     await @generate defer err, ret
     if not err? and ret?
-      ret = utils.base64u.encode ret
+      ret = encode ret
     cb err, ret
   
   #-----------------------------------------
 
-  pack_to_client : () -> utils.base64u.encode @_pack false
+  pack_to_client : () -> encode @_pack false
     
 ##=======================================================================
 
