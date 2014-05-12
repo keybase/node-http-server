@@ -6,6 +6,7 @@ log                   = require './log'
 mm                    = require('./mod').mgr
 url                   = require 'url'
 env                   = require './env'
+{json_checker}        = require './json_checker'
 
 util = require 'util'
 
@@ -145,7 +146,7 @@ exports.Handler = class Handler
   handle : (cb) ->
     await @__handle_universal_headers defer()
     await @__set_cross_site_get_headers defer()
-    await @__handle_checks defer()
+    await @__handle_input  defer()
     await @__handle_custom defer()
     await @__handle_output defer()
     cb()
@@ -167,6 +168,28 @@ exports.Handler = class Handler
     if env.get().get_run_mode().is_prod()
       @res.set "Strict-Transport-Security", "max-age=31536000"
     cb()
+
+  #------
+
+  __decode_input : () ->
+    if (f = @get_unchecked_input_field 'json')
+      @__decode_input_json(f)
+    else if (f = @get_unchecked_input_field 'mpack')
+      @__decode_input_mpack(f)
+    else
+      @input = {}
+
+  #------
+
+  __check_inputs : () ->
+    template = @needed_inputs()
+    for k,v of template
+      err = json_checker { key : k, template : v, json : @input }
+
+  #------
+
+  __check_input : (k,v) ->
+
 
   #------
   
