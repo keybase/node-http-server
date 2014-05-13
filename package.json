@@ -35,11 +35,13 @@
     "errorhandler": "^1.0.1",
     "method-override": "^1.0.0",
     "morgan": "^1.0.1",
-    "body-parser": "^1.0.2",
     "yargs": "^1.2.1",
     "mysql": "^2.2.0",
     "read": "^1.0.5",
     "iced-logger": "0.0.3",
-    "purepack": "~1.0.0"
+    "purepack": "~1.0.0",
+    "kbjo": "~0.0.0",
+    "type-is": "~1.2.0",
+    "raw-body": "~1.1.4"
   }
 }

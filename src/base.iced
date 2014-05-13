@@ -7,6 +7,7 @@ mm                    = require('./mod').mgr
 url                   = require 'url'
 env                   = require './env'
 {json_checker}        = require './json_checker'
+kbjo                  = require 'kbjo'
 
 util = require 'util'
 
@@ -172,30 +173,33 @@ exports.Handler = class Handler
   #------
 
   __decode_input : () ->
-    if (f = @get_unchecked_input_field 'json')
-      @__decode_input_json(f)
-    else if (f = @get_unchecked_input_field 'mpack')
-      @__decode_input_mpack(f)
+    json = msgpack = false
+    if (f = @get_unchecked_input_field 'json')?
+      json = true
+    else if (f = @get_unchecked_input_field 'msgpack')?
+      msgpack = true
+
+    if f?
     else
       @input = {}
 
   #------
 
   __check_inputs : () ->
+    ret = null
     template = @needed_inputs()
     for k,v of template
-      err = json_checker { key : k, template : v, json : @input }
-
-  #------
-
-  __check_input : (k,v) ->
-
+      err = json_checker { key : k, checker : v, json : @input }
+      if err?
+        @_error_in_field[k] = err
+        ret = err
+    return ret
 
   #------
   
-  __handle_checks : (cb) ->
-    if @get_input()
-      @set_ok()
+  __handle_input : (cb) ->
+    @__decode_input()
+    @set_ok() unless (err = @__check_inputs())?
     cb()
 
   #------

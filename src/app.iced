@@ -11,6 +11,8 @@ methodOverride = require 'method-override'
 morgan         = require 'morgan'
 errorHandler   = require 'errorhandler'
 
+{msgpackParser} = require 'body_parser'
+
 ##-----------------------------------------------------------------------
 
 exports.App = class App
@@ -34,8 +36,9 @@ exports.App = class App
     log.info "In app.configure: set port to #{port}"
     app.set 'port', port
     app.enable 'trust proxy'
-    app.use bodyParser()
+    app.use bodyParser.json()
     app.use methodOverride()
+    app.use msgpackParser()
 
     # For devel
     app.use morgan 'dev'
