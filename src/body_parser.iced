@@ -20,7 +20,7 @@ parse_msgpack_body = ({req, res, opts }, cb) ->
 
 #===============================================================
 
-exports.msgpack_parser = (opts) -> (req, res, next) ->
+exports.msgpack_parser = (opts = {}) -> (req, res, next) ->
   err = null
 
   stem = "application/x-msgpack"
@@ -37,7 +37,7 @@ exports.msgpack_parser = (opts) -> (req, res, next) ->
 
 #===============================================================
 
-_json_bufferize = (req, res, next) ->
+exports.json_bufferizer = json_bufferizer = (opts = {}) -> (req, res, next) ->
 
   # These are the conditions that the json() parse of 
   # body-parser middleware sets

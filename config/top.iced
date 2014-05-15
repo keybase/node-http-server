@@ -1,0 +1,1 @@
+exports.required = [ "host", "handlers" ]

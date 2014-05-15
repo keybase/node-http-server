@@ -19,10 +19,13 @@ class Module
 
   init : (cb) ->
     cfg = mm.config.db
-    cfg.password or= mm.config.secrets.dbpw
-    n = cfg.n_threads
-    @_waiters = []
-    @_clients = (mysql.createConnection cfg for i in [0...n])
+    if cfg?
+      cfg.password or= mm.config.secrets.dbpw
+      n = cfg.n_threads
+      @_waiters = []
+      @_clients = (mysql.createConnection cfg for i in [0...n])
+    else
+      log.warn "no db.config; skipping DB module creation"
     cb true
 
   ##-----------------------------------------

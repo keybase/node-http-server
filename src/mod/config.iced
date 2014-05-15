@@ -1,4 +1,4 @@
-
+''
 env = require "../env"
 path = require 'path'
 
@@ -20,6 +20,7 @@ class Module
     @_paths = {}
     @source_modules @_rfiles, true
     @source_modules @_ofiles, false
+    @_loaded = true
 
   #-----------------------------------------
 
@@ -46,17 +47,17 @@ class Module
   #-----------------------------------------
 
   source_modules : (list, required) ->
-    @_loaded = true
-    for f in list
-      p = @find_path f
-      if p
-        c = @source_module p
-        @_paths[f] = p
-        @_obj[f] = c
-        @[f] = c
-      else if required
-        @_loaded = false
-        console.log "Cannot find config file '#{f}'"
+    if list?    
+      for f in list
+        p = @find_path f
+        if p
+          c = @source_module p
+          @_paths[f] = p
+          @_obj[f] = c
+          @[f] = c
+        else if required
+          @_loaded = false
+          console.log "Cannot find config file '#{f}'"
 
   #-----------------------------------------
 

@@ -11,7 +11,7 @@ methodOverride = require 'method-override'
 morgan         = require 'morgan'
 errorHandler   = require 'errorhandler'
 
-{json_bufferizer,msgpack_parser} = require 'body_parser'
+{json_bufferizer,msgpack_parser} = require './body_parser'
 
 ##-----------------------------------------------------------------------
 
@@ -36,15 +36,14 @@ exports.App = class App
     log.info "In app.configure: set port to #{port}"
     app.set 'port', port
     app.enable 'trust proxy'
-    app.use bodyParser.json()
     app.use methodOverride()
 
     # These are middlewares specific to our JSON/Msgpack systems.
-
-    # Turns {__b : "aEbe4==" } into the appropriate buffer object
+    #  1. JSON decode as normal.
+    #  2. Turn {__b : "aEbe4==" } into the appropriate buffer object
+    #  3. Decode msgpack if necessary
+    app.use bodyParser.json()
     app.use json_bufferizer()
-
-    # Decode msgpack if necessary
     app.use msgpack_parser()
 
     # For devel
