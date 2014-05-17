@@ -1,10 +1,10 @@
 
-kbjo = require 'kbjo'
+{lookup} = require 'keybase-bjson-core'
 
 #--------------------------------------------------
 
 exports.json_checker = json_checker = ({key, checker, json}) -> 
-  val = kbjo.lookup { key, obj : json }
+  val = lookup { key, obj : json }
   [err, res] = checker val
   return [err, res]
 

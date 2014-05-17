@@ -6,12 +6,12 @@ log      = require './log'
 
 # Express middleware
 express        = require 'express'
-bodyParser     = require 'body-parser'
 methodOverride = require 'method-override'
 morgan         = require 'morgan'
 errorHandler   = require 'errorhandler'
 
-{json_bufferizer,msgpack_parser} = require './body_parser'
+{bjson_parser} = require 'keybase-bjson-express'
+
 
 ##-----------------------------------------------------------------------
 
@@ -42,9 +42,7 @@ exports.App = class App
     #  1. JSON decode as normal.
     #  2. Turn {__b : "aEbe4==" } into the appropriate buffer object
     #  3. Decode msgpack if necessary
-    app.use bodyParser.json()
-    app.use json_bufferizer()
-    app.use msgpack_parser()
+    app.use bjson_parser()
 
     # For devel
     app.use morgan 'dev'

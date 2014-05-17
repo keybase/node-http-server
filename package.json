@@ -40,9 +40,7 @@
     "read": "^1.0.5",
     "iced-logger": "0.0.3",
     "purepack": "~1.0.0",
-    "kbjo": "~0.0.0",
-    "type-is": "^1.2.0",
-    "raw-body": "^1.1.5",
-    "body-parser": "^1.2.0"
+    "keybase-bjson-core": "0.0.1",
+    "keybase-bjson-express": "0.0.1"
   }
 }

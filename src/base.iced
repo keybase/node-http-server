@@ -7,7 +7,7 @@ mm                    = require('./mod').mgr
 url                   = require 'url'
 env                   = require './env'
 {json_checker}        = require './json_checker'
-kbjo                  = require 'kbjo'
+{respond}             = require 'keybase-bjson-express'
 
 util = require 'util'
 
@@ -27,10 +27,11 @@ exports.Handler = class Handler
   constructor : (@req, @res) ->
     log.make_logs @,  { remote : @req.ip, prefix : @req.protocol }
     @_error_in_field    = {}
-    @oo                 = {}
+    @oo                 = { status : {}, body : {} }
     @user               = null
     @response_sent_yet  = false
     @http_out_code      = 200
+    @out_encoding       = 'json'
    
   #-----------------------------------------
 
@@ -47,8 +48,8 @@ exports.Handler = class Handler
 
   #-----------------------------------------
 
-  pub : (dict) -> @oo[k] = v for k,v of dict
-  clear_pub : () -> @oo = {}
+  pub : (dict) -> @oo.body[k] = v for k,v of dict
+  clear_pub : () -> @oo = { status : {}, body : {}}
 
   #-----------------------------------------
 
@@ -128,14 +129,14 @@ exports.Handler = class Handler
   
   send_res_json : (cb) ->
     @format_res()
-    @res.send @http_out_code, @oo
+    respond { obj : @oo, code : @http_out_code, encoding : @out_encoding, @res }
     @response_sent_yet = true
     cb()
 
   #-----------------------------------------
 
   format_res : ->
-    if @oo.status?
+    if @oo.status?.code
       # noop
     else if not @is_input_ok()
       @set_error sc.INPUT_ERROR, "Error in JSON input", @_error_in_field
@@ -196,9 +197,16 @@ exports.Handler = class Handler
     return ret
 
   #------
+
+  __set_out_encoding : () ->
+    if (m = @req.path.match /\.(json|msgpack|msgpack64)$/)
+      @out_encoding = m[1]
+
+  #------
   
   __handle_input : (cb) ->
     @__decode_input()
+    @__set_out_encoding()
     @set_ok() unless (err = @__check_inputs())?
     cb()
 
