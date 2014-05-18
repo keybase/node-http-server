@@ -18,25 +18,22 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
     if cfg?
       @key = new Buffer cfg.key, 'base64' # keep the key b64-encoded in the config file
       @lifetime = cfg.lifetime unless @lifetime
+      @id = cfg.id unless @id
 
   #-----------------------------------------
 
-  @check_from_client : (s, cfg, cb) ->
-    [err,obj] = SelfCertifiedToken.from_client s, cfg
+  @check_from_client : (json, cfg, cb) ->
+    [err,obj] = SelfCertifiedToken.from_client json, cfg
     await obj.check defer err unless err?
     cb err, obj
  
   #-----------------------------------------
 
-  @from_client : (b, cfg) ->
+  @from_client : (x, cfg) ->
     err = null
     ret = null
     klass = cfg.klass or SelfCertifiedToken
-    if not Buffer.isBuffer(b) or b.length is 0
-      err = "Failed to find a non-0 buffer"
-    else if not ([e,x] = (utils.katch () -> unpack b))? or e?
-      err = "Failed to purepack.unpack"
-    else if not Array.isArray x
+    if not Array.isArray x
       err = "Expected array, not something else: #{JSON.stringify x}"
     else if (x.length isnt 5) or (x[0] isnt @VERSION)
       err = "Only understand version #{@VERSION}; got something else: #{JSON.stringify x}"
@@ -90,7 +87,7 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
   #-----------------------------------------
 
   _make_mac : (enc = null) ->
-    msg = @_pack true
+    msg = pack @_to_array true
     if not @key or @key.length is 0
       throw new Error "Failing to make, since @key is empty"
     hm = crypto.createHmac 'sha512', @key
@@ -99,11 +96,9 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
 
   #-----------------------------------------
 
-  _pack : (null_mac) ->
+  _to_array : (null_mac) ->
     mac = if null_mac then null else @mac
-    a = [ @version, @id, @generated, @lifetime, mac ]
-    ret = pack a
-    return ret
+    return [ @version, @id, @generated, @lifetime, mac ]
     
   #-----------------------------------------
 
@@ -112,7 +107,7 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
     @generated = utils.unix_time()
     @lifetime = mm.config.security.sct.lifetime unless @lifetime?
     @mac = @_make_mac()
-    ret = @_pack false
+    ret = @_to_array false
     err = null
     cb err, ret
 

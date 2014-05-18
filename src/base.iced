@@ -35,8 +35,7 @@ exports.Handler = class Handler
    
   #-----------------------------------------
 
-  needed_fields : -> []
-  maybe_fields : -> []
+  needed_inputs : -> []
 
   #-----------------------------------------
 
@@ -173,19 +172,6 @@ exports.Handler = class Handler
 
   #------
 
-  __decode_input : () ->
-    json = msgpack = false
-    if (f = @get_unchecked_input_field 'json')?
-      json = true
-    else if (f = @get_unchecked_input_field 'msgpack')?
-      msgpack = true
-
-    if f?
-    else
-      @input = {}
-
-  #------
-
   __check_inputs : () ->
     ret = null
     template = @needed_inputs()
@@ -205,7 +191,7 @@ exports.Handler = class Handler
   #------
   
   __handle_input : (cb) ->
-    @__decode_input()
+    @input = @req.body
     @__set_out_encoding()
     @set_ok() unless (err = @__check_inputs())?
     cb()
