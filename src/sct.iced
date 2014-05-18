@@ -7,11 +7,6 @@ mm             = require('./mod').mgr
 
 ##=======================================================================
 
-encode = (s) -> s.toString 'base64'
-decode = (b) -> new Buffer b, 'base64'
-
-##=======================================================================
-
 exports.SelfCertifiedToken = class SelfCertifiedToken
 
   @VERSION : 1
@@ -19,9 +14,9 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
 
   #-----------------------------------------
 
-  constructor : ({@version, @id, @generated, @lifetime, @mac, @key, @addr, cfg}) ->
+  constructor : ({@version, @id, @generated, @lifetime, @mac, @addr, cfg}) ->
     if cfg?
-      @key = cfg.key
+      @key = new Buffer cfg.key, 'base64' # keep the key b64-encoded in the config file
       @lifetime = cfg.lifetime unless @lifetime
 
   #-----------------------------------------
@@ -33,12 +28,12 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
  
   #-----------------------------------------
 
-  @from_client : (s, cfg) ->
+  @from_client : (b, cfg) ->
     err = null
     ret = null
     klass = cfg.klass or SelfCertifiedToken
-    if not (b = decode(s))? or b.length is 0
-      err = "Failed to base64-decode"
+    if not Buffer.isBuffer(b) or b.length is 0
+      err = "Failed to find a non-0 buffer"
     else if not ([e,x] = (utils.katch () -> unpack b))? or e?
       err = "Failed to purepack.unpack"
     else if not Array.isArray x
@@ -96,8 +91,9 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
 
   _make_mac : (enc = null) ->
     msg = @_pack true
-    key = decode @key
-    hm = crypto.createHmac 'sha512', key
+    if not @key or @key.length is 0
+      throw new Error "Failing to make, since @key is empty"
+    hm = crypto.createHmac 'sha512', @key
     hm.update msg
     hm.digest()
 
@@ -122,15 +118,7 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
 
   #-----------------------------------------
 
-  generate_to_client : (cb) ->
-    await @generate defer err, ret
-    if not err? and ret?
-      ret = encode ret
-    cb err, ret
-  
-  #-----------------------------------------
-
-  pack_to_client : () -> encode @_pack false
+  pack_to_client : () -> @_pack false
     
 ##=======================================================================
 
