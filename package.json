@@ -41,6 +41,8 @@
     "iced-logger": "0.0.3",
     "purepack": "~1.0.0",
     "keybase-bjson-core": "0.0.1",
-    "keybase-bjson-express": "0.0.1"
+    "keybase-bjson-express": "0.0.1",
+    "iced-test": "0.0.15",
+    "minimist": "^0.1.0"
   }
 }
