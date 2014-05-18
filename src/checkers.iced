@@ -113,6 +113,22 @@ checkers.check_multi = check_multi = (x,fn) ->
 
 ##-----------------------------------------------------------------------
 
+checkers.check_array = check_array = (x, min = null, max = null) ->
+  if typeof(x) isnt 'object' or not Array.isArray(x) then E("expected an array")
+  else if min? and x.length < min then E("Array must have > #{min} elements")
+  else if max? and x.length > max then E("Array must have < #{max} elements")
+  else null
+
+##-----------------------------------------------------------------------
+
+checkers.check_buffer = check_buffer = (x, min = null, max = null) ->
+  if typeof(x) isnt 'object' or not Buffer.isBuffer(x) then E("expected a buffer")
+  else if min? and x.length < min then E("Buffer must have > #{min} bytes")
+  else if max? and x.length > max then E("Buffer must have < #{max} bytes")
+  else null
+
+##-----------------------------------------------------------------------
+
 exports.raw = checkers
 exports.curried = curried = {}
 
