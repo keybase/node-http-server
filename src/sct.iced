@@ -17,7 +17,7 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
   constructor : ({@version, @id, @generated, @lifetime, @mac, @addr, cfg}) ->
     if cfg?
       @key = new Buffer cfg.key, 'base64' # keep the key b64-encoded in the config file
-      @lifetime = cfg.lifetime unless @lifetime
+      @lifetime = cfg.lifetime unless @lifetime?
       @id = cfg.id unless @id
 
   #-----------------------------------------
@@ -50,8 +50,8 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
 
   #-----------------------------------------
 
-  check_replay : (cb) ->
-    cb null
+  check_replay : (cb) -> cb null
+  check_solution : (cb) -> cb null
 
   #-----------------------------------------
 
@@ -79,8 +79,9 @@ exports.SelfCertifiedToken = class SelfCertifiedToken
       err = mkerr "No MAC given", sc.SCT_CORRUPT
     else if not utils.bufeq_secure m, @mac
       err = mkerr "MAC mismatch", sc.SCT_BAD_MAC
-    else if @sid?
-      await @check_replay defer err
+    else if @id?
+      await @check_solution defer err 
+      await @check_replay defer err unless err?
 
     cb err
 

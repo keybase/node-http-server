@@ -12,6 +12,7 @@ module.exports = new Enum
   SCT_EXPIRED                 : 302
   SCT_BAD_MAC                 : 303
   SCT_REPLAY                  : 304
+  SCT_BAD_SOLUTION            : 305
 
 #==========================================================================
 

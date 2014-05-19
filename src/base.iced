@@ -127,7 +127,6 @@ exports.Handler = class Handler
   #------
 
   __check_inputs : () ->
-    console.log core
     core.check_template @input_template(), @input, "HTTP"
 
   #------
