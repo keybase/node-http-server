@@ -8,7 +8,7 @@
   },
   "bin": {
     "app": "./bin/app.js",
-    "cfg": "./bin/cfg.js"
+    "dbsetup": "./bin/dbsetup.js"
   },
   "repository": {
     "type": "git",
