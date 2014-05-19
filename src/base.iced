@@ -8,6 +8,7 @@ url                   = require 'url'
 env                   = require './env'
 {json_checker}        = require './json_checker'
 {respond}             = require 'keybase-bjson-express'
+core                  = require 'keybase-bjson-core'
 
 util = require 'util'
 
@@ -35,7 +36,7 @@ exports.Handler = class Handler
    
   #-----------------------------------------
 
-  needed_inputs : -> []
+  input_template : -> {}
 
   #-----------------------------------------
 
@@ -49,52 +50,6 @@ exports.Handler = class Handler
 
   pub : (dict) -> @oo.body[k] = v for k,v of dict
   clear_pub : () -> @oo = { status : {}, body : {}}
-
-  #-----------------------------------------
-
-  get_unchecked_input_field: (f) ->
-    ###
-    does no error checking
-    ###
-    v       = null
-    arrays  = [ "body", "query", "params"]
-    for a in arrays
-      break if (v = @req[a][f])?
-    if (not v?) or (v.length is 0) 
-      return null
-    return v
-
-  #-----------------------------------------
-
-  # Can override this as needs be, especially if you want to add new checkers
-  # For now, everything is good, and return the original value is given.
-  check_field : (f, v) -> [ null, v ]
-
-  #-----------------------------------------
-
-  get_input_field : (f, is_optional) ->
-    v = @get_unchecked_input_field f
-    if (not v?) and is_optional
-      return true
-    [e,v] = @check_field f, v
-    ret = true
-    if e
-      @_error_in_field[f] = e
-      ret = false
-    else
-      @[f] = v
-    return ret
-  
-  #-----------------------------------------
-  
-  get_input : ->
-    ret = true
-    for f in @needed_fields()
-      ret = false unless @get_input_field f, false
-    for f in @maybe_fields()
-      ret = false unless @get_input_field f, true
-    @set_error sc.INPUT_ERROR, "missing or invalid input", @_error_in_field unless ret
-    return ret
 
   #-----------------------------------------
 
@@ -173,14 +128,8 @@ exports.Handler = class Handler
   #------
 
   __check_inputs : () ->
-    ret = null
-    template = @needed_inputs()
-    for k,v of template
-      err = json_checker { key : k, checker : v, json : @input }
-      if err?
-        @_error_in_field[k] = err
-        ret = err
-    return ret
+    console.log core
+    core.check_template @input_template(), @input, "HTTP"
 
   #------
 
