@@ -1,4 +1,3 @@
-{checkers}            = require './checkers'
 status_enum           = require './status'
 sc                    = status_enum.codes
 sc_lookup             = status_enum.lookup
