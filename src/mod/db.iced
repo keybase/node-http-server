@@ -128,6 +128,7 @@ class Module
           err.sc = sc.DB_INSERT_ERROR
         else if (a = c.opts?.assertion)? and not a rows
           err = new Error "assertion #{i} failed"
+          err.sc = sc.DB_ASSERT_ERROR
         elist[i] = err
         edict[name] = err if (name = c.opts?.name)?
         if err?

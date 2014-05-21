@@ -18,6 +18,7 @@ module.exports = new Enum
   SESSION_EXPIRED             : 401
   DB_SELECT_ERROR             : 501
   DB_INSERT_ERROR             : 502
+  DB_ASSERT_ERROR             : 503
 
 #==========================================================================
 
