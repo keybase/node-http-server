@@ -101,8 +101,9 @@ exports.Handler = class Handler
   handle : (cb) ->
     await @__handle_universal_headers defer()
     await @__set_cross_site_get_headers defer()
-    await @__handle_input  defer()
-    await @__handle_custom defer()
+    await @__handle_input  defer err
+    unless err?
+      await @__handle_custom defer()
     await @__handle_output defer()
     cb()
 
@@ -127,7 +128,8 @@ exports.Handler = class Handler
   #------
 
   __check_inputs : () ->
-    core.check_template @input_template(), @input, "HTTP"
+    err = core.check_template @input_template(), @input, "HTTP"
+    return err 
 
   #------
 
@@ -140,8 +142,9 @@ exports.Handler = class Handler
   __handle_input : (cb) ->
     @input = @req.body
     @__set_out_encoding()
-    @set_ok() unless (err = @__check_inputs())?
-    cb()
+    if (err = @__check_inputs())? then @set_error sc.INPUT_ERROR, err.message
+    else @set_ok()
+    cb err
 
   #------
 
