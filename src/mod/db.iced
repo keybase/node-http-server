@@ -125,6 +125,7 @@ class Module
         await cli.query c.query, c.args, defer err, rows
         if err?
           err = new Error "Error in command #{c.query}: #{err}"
+          err.sc = sc.DB_INSERT_ERROR
         else if (a = c.opts?.assertion)? and not a rows
           err = new Error "assertion #{i} failed"
         elist[i] = err
