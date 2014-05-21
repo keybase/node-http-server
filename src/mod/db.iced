@@ -5,7 +5,7 @@ sc    = require('../status').codes
 
 ##=======================================================================
 
-exports.Tx = class Tx
+class Tx
   constructor : () -> 
     @txl = []
     @commit_trigger = null
@@ -27,6 +27,10 @@ class Module
     else
       log.warn "no db.config; skipping DB module creation"
     cb true
+
+  ##-----------------------------------------
+
+  new_tx : () -> new Tx()
 
   ##-----------------------------------------
   
