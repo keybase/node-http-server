@@ -1,5 +1,5 @@
 
-{Enum} = require './enum'
+{Enum} = require('iced-utils').enum
 
 #==========================================================================
 
@@ -13,6 +13,7 @@ module.exports = new Enum
   SCT_BAD_MAC                 : 303
   SCT_REPLAY                  : 304
   SCT_BAD_SOLUTION            : 305
+  SESSION_EXPIRED             : 401
 
 #==========================================================================
 

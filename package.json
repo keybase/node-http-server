@@ -29,7 +29,7 @@
     "framed-msgpack-rpc": "^1.1.2",
     "iced-error": "0.0.8",
     "pgp-utils": "0.0.20",
-    "iced-utils": "^0.1.12",
+    "iced-utils": "^0.1.14",
     "kbpgp": "^0.1.14",
     "express": "^4.1.1",
     "errorhandler": "^1.0.1",
