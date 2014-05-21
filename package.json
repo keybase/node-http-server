@@ -1,6 +1,6 @@
 {
-  "name": "base-http-server",
-  "version": "0.0.0",
+  "name": "keybase-http-server",
+  "version": "0.0.3",
   "description": "Base HTTP Server for keybase apps",
   "main": "src/main.iced",
   "scripts": {
@@ -8,11 +8,11 @@
   },
   "bin": {
     "app": "./bin/app.js",
-    "cfg": "./bin/cfg.js"
+    "dbsetup": "./bin/dbsetup.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/keybase/base-http-server"
+    "url": "git://github.com/keybase/node-http-server"
   },
   "keywords": [
     "HTTP",
@@ -21,9 +21,9 @@
   "author": "Maxwell Krohn",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/keybase/base-http-server/issues"
+    "url": "https://github.com/keybase/node-http-server/issues"
   },
-  "homepage": "https://github.com/keybase/base-http-server",
+  "homepage": "https://github.com/keybase/node-http-server",
   "dependencies": {
     "iced-coffee-script": "^1.7.1-b",
     "framed-msgpack-rpc": "^1.1.2",
