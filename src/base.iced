@@ -156,7 +156,8 @@ exports.Handler = class Handler
     if @is_ok()
       await @_handle defer err
       if err?
-        @set_error err.code, err.message 
+        code = err.sc or sc.GENERIC_ERROR
+        @set_error code, err.message 
         @http_out_code = c if (c = err.http_code)?
     else
       await @_handle_err defer()

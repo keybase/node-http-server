@@ -98,10 +98,12 @@ class Module
     await @query q, args, defer err, info
     if err?
       log.error "In #{q} w/ #{JSON.stringify args}: #{err}"
+      err.sc = sc.DB_INSERT_ERROR
     else if (((ar = info.affectedRows) isnt 1) and
              (not insert_or_update or (ar isnt 2)))
       log.warn "In #{q} w/ #{JSON.stringify args}; wrong number of rows: #{ar}"
       err = new Error "wrong number of rows"
+      err.sc = sc.CORRUPTION
     cb err
 
   ##-----------------------------------------
