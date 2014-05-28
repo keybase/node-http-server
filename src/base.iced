@@ -55,8 +55,6 @@ exports.Handler = class Handler
 
   set_error : (code, desc = null, fields = null) ->
     @oo.status = make_status_obj code, desc, fields
-    log.warn "set_error #{code} #{desc}" unless code is sc.OK
-    new Error code
 
   #-----------------------------------------
 
@@ -82,21 +80,10 @@ exports.Handler = class Handler
   #-----------------------------------------
   
   send_res_json : (cb) ->
-    @format_res()
     respond { obj : @oo, code : @http_out_code, encoding : @out_encoding, @res }
     @response_sent_yet = true
     cb()
 
-  #-----------------------------------------
-
-  format_res : ->
-    if @oo.status?.code
-      # noop
-    else if not @is_input_ok()
-      @set_error sc.INPUT_ERROR, "Error in JSON input", @_error_in_field
-    else
-      @set_ok()
-   
   #==============================================
   
   handle : (cb) ->
@@ -141,6 +128,8 @@ exports.Handler = class Handler
 
   __check_inputs : () ->
     err = core.check_template @input_template(), @input, "HTTP"
+    if err?
+      err.sc = sc.INPUT_ERROR
     return err 
 
   #------
@@ -154,8 +143,7 @@ exports.Handler = class Handler
   __handle_input : (cb) ->
     @input = @req.body
     @__set_out_encoding()
-    if (err = @__check_inputs())? then @set_error sc.INPUT_ERROR, err.message
-    else @set_ok()
+    @set_ok() unless (err = @__check_inputs())? 
     cb err
 
   #------
@@ -178,6 +166,7 @@ exports.Handler = class Handler
       code = err.sc or sc.GENERIC_ERROR
       @set_error code, err.message 
       @http_out_code = c if (c = err.http_code)?
+      log.warn "Error #{code}: #{err.message}"
 
   #------
   
