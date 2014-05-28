@@ -100,9 +100,9 @@ exports.Handler = class Handler
   #==============================================
   
   handle : (cb) ->
-    await @__handle_stage_1 defer err     # input & header processing
-    await @__handle_stage_2 err, defer()  # custom logic OR error handling
-    await @__handle_stage_3 defer()       # output 
+    await @__handle_stage_1 defer e1       # input & header processing
+    await @__handle_stage_2 e1, defer e2   # custom logic OR error handling
+    await @__handle_stage_3 e2, defer()    # output 
     cb()
 
   #------
@@ -160,33 +160,34 @@ exports.Handler = class Handler
 
   #------
 
-  _handle_err : (err, cb) -> cb()
+  _handle_err : (cb, err) -> cb err
 
   #------
   
-  __handle_stage_2: (err, cb) ->
-    if err?
-      await @_handle_err err, defer()
+  __handle_stage_2: (e1, cb) ->
+    if e1?
+      await @_handle_err defer(e2), e1
     else
-      await @_handle defer err
-      if err?
-        code = err.sc or sc.GENERIC_ERROR
-        @set_error code, err.message 
-        @http_out_code = c if (c = err.http_code)?
-    cb err
+      await @_handle defer e2
+    cb e2
+
+  #------
+
+  __err_to_http_and_json : (err) ->
+    if err?
+      code = err.sc or sc.GENERIC_ERROR
+      @set_error code, err.message 
+      @http_out_code = c if (c = err.http_code)?
 
   #------
   
-  __handle_stage_3 : (cb) ->
+  __handle_stage_3 : (err, cb) ->
     unless @response_sent_yet
+      @__err_to_http_and_json err
       await @send_res_json defer()
     cb()
    
   #==============================================
-
-  _handle_err : (cb) -> @_handle cb
-
-  #-----------------------------------------
     
   @make_endpoint : (opts) ->
     (req, res) =>
