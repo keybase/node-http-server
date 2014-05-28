@@ -10,6 +10,7 @@ module.exports = new Enum
   INPUT_ERROR                 : 101
   NOT_FOUND                   : 102
   CORRUPTION                  : 103
+  PERMISSION_DENIED           : 104
   SCT_CORRUPT                 : 301
   SCT_EXPIRED                 : 302
   SCT_BAD_MAC                 : 303

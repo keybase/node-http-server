@@ -8,6 +8,7 @@ env                   = require './env'
 {json_checker}        = require './json_checker'
 {respond}             = require 'keybase-bjson-express'
 core                  = require 'keybase-bjson-core'
+{chain,make_esc}      = require 'iced-error'
 
 util = require 'util'
 
@@ -99,13 +100,24 @@ exports.Handler = class Handler
   #==============================================
   
   handle : (cb) ->
-    await @__handle_universal_headers defer()
-    await @__set_cross_site_get_headers defer()
-    await @__handle_input  defer err
-    unless err?
-      await @__handle_custom defer()
-    await @__handle_output defer()
+    await @__handle_stage_1 defer err     # input & header processing
+    await @__handle_stage_2 err, defer()  # custom logic OR error handling
+    await @__handle_stage_3 defer()       # output 
     cb()
+
+  #------
+
+  __handle_stage_1 : (cb) ->
+    esc = make_esc cb, "Handler::handle"
+    await @__handle_universal_headers esc defer()
+    await @__set_cross_site_get_headers esc defer()
+    await @__handle_input esc defer()
+    await @_handle_auth esc defer()
+    cb()
+
+  #------
+
+  _handle_auth : (cb) -> cb null
 
   #------
 
@@ -148,24 +160,24 @@ exports.Handler = class Handler
 
   #------
 
-  _handle_err : (cb) -> cb()
+  _handle_err : (err, cb) -> cb()
 
   #------
   
-  __handle_custom : (cb) ->
-    if @is_ok()
+  __handle_stage_2: (err, cb) ->
+    if err?
+      await @_handle_err err, defer()
+    else
       await @_handle defer err
       if err?
         code = err.sc or sc.GENERIC_ERROR
         @set_error code, err.message 
         @http_out_code = c if (c = err.http_code)?
-    else
-      await @_handle_err defer()
-    cb()
+    cb err
 
   #------
   
-  __handle_output : (cb) ->
+  __handle_stage_3 : (cb) ->
     unless @response_sent_yet
       await @send_res_json defer()
     cb()
